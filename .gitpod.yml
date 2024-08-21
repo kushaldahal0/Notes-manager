@@ -1,0 +1,25 @@
+tasks:
+  - name: Setup MongoDB Atlas Cluster
+    init: |
+      # Install Python dependencies
+      pip install -r requirements.txt
+      
+      # Start MongoDB using Atlas
+      source /home/gitpod/.mongodb-utils.sh
+      atlas_up
+    command: |
+      # Run FastAPI application
+      uvicorn main:app --reload --host 0.0.0.0 --port 8000
+
+  - name: Cleanup Atlas Cluster
+    command: |
+      source /home/gitpod/.mongodb-utils.sh
+      atlas_cleanup_when_done
+
+ports:
+  - port: 8000
+    onOpen: open-preview
+
+vscode:
+  extensions:
+    - mongodb.mongodb-vscode
