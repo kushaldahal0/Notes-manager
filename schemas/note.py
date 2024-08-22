@@ -8,5 +8,5 @@ def noteEntity(item) -> dict:
 
     }
 
-def notesEntity(items) -> list:
+def notesEntity(items) -> list[dict]:
     return [noteEntity(item) for item in items]

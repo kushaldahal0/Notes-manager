@@ -63,46 +63,47 @@
                 <li>{% for da in data %} {{ da }} - {{ data[da] }}<br> {% endfor %}</li>
                 {% endfor %}
             </ul> -->
+            {% if datas %}
             {% for data in datas %}
                 <div class="col">
                     <div class="card card-cover h-100 overflow-hidden text-bg-dark rounded-4 shadow-lg" style="background-image: url('unsplash-photo-3.jpg');">
                       <div class="d-flex flex-column h-100 p-5 pb-3 text-shadow-1">
-                        <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{ data['note'] }}</h3>
+                        <h3 class="pt-5 mt-5 mb-4 display-6 lh-1 fw-bold">{{ data.title }}</h3>
                         <ul class="d-flex list-unstyled mt-auto">
-                          <li class="me-auto">
-                            <img src="https://github.com/twbs.png" alt="Bootstrap" width="32" height="32" class="rounded-circle border border-white">
-                          </li>
                           <li class="d-flex align-items-center me-3">
                             <svg class="bi me-2" width="1em" height="1em"><use xlink:href="#geo-fill"></use></svg>
-                            <small>California</small>
+                            <small>{{ data.desc }}</small>
                           </li>
                           <li class="d-flex align-items-center">
                             <svg class="bi me-2" width="1em" height="1em"><use xlink:href="#calendar3"></use></svg>
-                            <small>5d</small>
+                            <small>{{ data.important }}</small>
                           </li>
                         </ul>
                       </div>
                     </div>
                 </div>
             {% endfor %}
+            {% else %}
+                <h2 class="pb-2 border-bottom">There are no notes to be found </h2>
+            {% endif%}
         </div>
     </div>
 
     <div class="container">
         <h1>Add your own Note</h1>
-        <form method="post">
+        <form action="/" method="post">
             <div class="m-3">
               <label for="title" class="form-label">Note Title</label>
-              <input type="text" class="form-control" id="title" aria-describedby="emailHelp">
+              <input type="text" class="form-control" name="title" aria-describedby="emailHelp">
               <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
             </div>
             <div class="m-3">
                 <label for="desc" class="form-label">Note Description</label>
-                <input type="text" class="form-control" id="desc" aria-describedby="emailHelp">
+                <input type="text" class="form-control" name="desc" aria-describedby="emailHelp">
                 <!-- <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div> -->
               </div>
               <div class="m-3 form-check">
-                <input type="checkbox" class="form-check-input" id="important">
+                <input type="checkbox" class="form-check-input" name="important">
                 <label class="form-check-label" for="important">Important?</label>
               </div>
             <button type="submit" class="m-3 btn btn-primary">Submit</button>

@@ -24,10 +24,19 @@ async def read_root(request: Request):
     cursor = collection.find({})
     #datas is list of dictionaries
     datas = await cursor.to_list(length = 100)
-    docs = [{"id" : data["_id"],"note": data["note"]} for data in datas]
+    # docs = [{"id" : data["_id"],"title": data["title"], "desc": data["desc"], "important": data["important"]} for data in datas]
+    docs = notesEntity(datas)
     return templates.TemplateResponse("index.html",{"request":request,"res":constringr,"datas":docs})
 
-
+@notes.post("/")
+async def create_note(request : Request):
+    form = await request.form()
+    print(form)
+    formDict = dict(form)
+    print(formDict)
+    formDict["important"] = True if formDict.get("important") == "on" else False
+    inserted_note = collection.insert_one(formDict)
+    return 
 
 @notes.get("/item/{item_id}")
 def read_id(item_id:int ,q: str|None=None):
