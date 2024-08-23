@@ -22,14 +22,10 @@ def user_login(request: Request):
 async def check_user(request: Request):
     form = await request.form()
     try:
+        #already on dict
         db_user = await user_collection.find_one({"username": form["username"]})
         if not db_user:
             raise HTTPException(status_code=404, detail="User not found")
-        # print(db_user)
-        # print()
-        # db_user = userEntity(db_user)
-        # print(db_user)
-        print(form["password"])
 
         if not verify_password(form["password"], db_user["hashed_password"]):
             raise HTTPException(status_code=401, detail="Incorrect password")
@@ -41,6 +37,11 @@ async def check_user(request: Request):
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+
+@user.get("/signup",response_class=HTMLResponse)
+async def user_signup(request: Request):
+    context = {"request": request}
+    return templates.TemplateResponse("users/signup.html",context)
 
 
 @user.get("/fakeacc")
