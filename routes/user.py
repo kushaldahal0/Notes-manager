@@ -22,21 +22,25 @@ def user_login(request: Request):
 async def check_user(request: Request):
     form = await request.form()
     try:
-        print(form["username"])
-        db = await user_collection.find_one({"username"} == form["username"])
-        if(db == None):
-            res = "no match found in the database!"
-            return{"status":res}
-        db_user = userEntity(db)
-        if verify_password(form["password"], db_user["hashed_password"]):
-            res ="login success!!!!"
-            if db_user["disabled"] == True:
-                res += " but your acc has been disabled!"
-        else:
-            res = "Login failed"
+        db_user = await user_collection.find_one({"username": form["username"]})
+        if not db_user:
+            raise HTTPException(status_code=404, detail="User not found")
+        # print(db_user)
+        # print()
+        # db_user = userEntity(db_user)
+        # print(db_user)
+        print(form["password"])
+
+        if not verify_password(form["password"], db_user["hashed_password"]):
+            raise HTTPException(status_code=401, detail="Incorrect password")
+
+        if db_user["disabled"]:
+            raise HTTPException(status_code=403, detail="User account disabled")
+
+        return {"status": "Login successful"}
+    
     except Exception as e:
-        res = str(e)
-    return{"status":res}
+        raise HTTPException(status_code=400, detail=str(e))
 
 
 @user.get("/fakeacc")
