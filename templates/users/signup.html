@@ -61,7 +61,9 @@
                         <p class="fs-14 text-gray text-center mb-4">Create an account to manage your notes.</p>
     
                         <form method="post" class="w-100">
-                            <div class="invalid-feedback">{{ Status }}</div>
+                            {% if Status %}
+                            <div class="form-group py-2 text-danger"><p class='text-center'>{{ Status }}</p></div>
+                            {% endif %}
                             <div class="form-group mb-3">
                                 <label for="username">Username <span class="required">*</span></label>
                                 <input type="text" name="username" id="username" class="form-control" placeholder="Username" required>

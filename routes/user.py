@@ -18,22 +18,21 @@ def user_login(request: Request):
     context = {"request":request}
     return templates.TemplateResponse("users/user_index.html",context)
 
-@user.post("/")
+@user.post("/", response_class=HTMLResponse)
 async def check_user(request: Request):
     form = await request.form()
     try:
-        #already on dict
         db_user = await user_collection.find_one({"username": form["username"]})
         if not db_user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            return templates.TemplateResponse("users/user_index.html", {"request": request, "Status": "User not found"})
 
         if not verify_password(form["password"], db_user["hashed_password"]):
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Incorrect password")
+            return templates.TemplateResponse("users/user_index.html", {"request": request, "Status": "Incorrect password"})
 
         if db_user["disabled"]:
-            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="User account disabled")
+            return templates.TemplateResponse("users/user_index.html", {"request": request, "Status": "User account disabled"})
 
-        return RedirectResponse("/note", status_code=status.HTTP_200_OK)
+        return RedirectResponse("/note", status_code=status.HTTP_302_FOUND)
     
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -47,28 +46,24 @@ async def user_signup(request: Request):
 async def user_signup(request: Request):
     form = await request.form()
     formDict = dict(form)
-    context = {"request": request}
-
+    
     if formDict['password'] != formDict['confirm_password']:
-        context["Status"]: "Passwords do not match"
-        return RedirectResponse("/signup", context ,status_code=status.HTTP_409_CONFLICT)
+        # Display error on the same page
+        return templates.TemplateResponse("users/signup.html", {"request": request, "Status": "Passwords do not match"})
 
     formDict["hashed_password"] = get_password_hash(formDict['password'])
     formDict["disabled"] = False
-    del formDict['password']  # Remove plain text password from the dictionary
-    del formDict['confirm_password']  # Remove confirm password field from the dictionary
+    del formDict['password']
+    del formDict['confirm_password']
     
     try:
         await user_collection.insert_one(formDict)
-        return RedirectResponse("/index", status_code=status.HTTP_200_OK)
+        return RedirectResponse("/note", status_code=status.HTTP_302_FOUND)
     except DuplicateKeyError:
-        context["Status"]: "Username already exists"
-        raise HTTPException(status_code=400, detail="Username already exists")
+        return templates.TemplateResponse("users/signup.html", {"request": request, "Status": "Username already exists"})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-    
-    return templates.TemplateResponse("users/signup.html", context)
 
 @user.get("/fakeacc")
 async def user_fake(request: Request):

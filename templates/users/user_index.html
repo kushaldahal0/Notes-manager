@@ -58,7 +58,9 @@
                     <div class="d-flex flex-column align-items-center justify-content-center w-100">
                         <h1 class="mb-4">User Login</h1>
                         <form action="/" method="post" class="w-100" id="loginform">
-    
+                            {% if Status %}
+                            <div class="form-group py-2 text-danger"><p class='text-center'>{{ Status }}</p></div>
+                            {% endif %}
                             <div class="form-group py-2">
                                 <label for="user_login">Username</label>
                                 <input type="text" name="username" id="user_login" class="form-control">
